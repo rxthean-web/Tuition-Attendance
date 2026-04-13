@@ -113,7 +113,7 @@ def fulltime():
     if request.method == "POST":
         teacher = request.form["teacher"]
         action = request.form["action"]
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        now = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
 
         cursor.execute("""
         INSERT INTO Attendance (teacher, time, type, subject, level)
@@ -136,7 +136,7 @@ def parttime():
     if request.method == "POST":
         teacher = request.form["teacher"]
         action = request.form["action"]
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        now = (datetime.datetime.now() + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M")
 
         if action == "class":
             subject = request.form["subject"]
