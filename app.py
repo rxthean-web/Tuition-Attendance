@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for， flash
 import sqlite3
 import datetime
 import requests
 
 app = Flask(__name__)
-
+app.secret_key = "123"
 # ===== Telegram =====
 BOT_TOKEN = "8724884045:AAFuDkAHDwHcQccnttQ1dl1OPyLNXnXNnLk"
 CHAT_ID = "8791380535"
