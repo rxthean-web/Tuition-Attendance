@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask,render_template, request, redirect,flash,url_for
 import sqlite3
 import datetime
 import requests
+from collections import defaultdict
 
 app = Flask(__name__)
 app.secret_key = "123"
+
 # ===== Telegram =====
 BOT_TOKEN = "8724884045:AAFuDkAHDwHcQccnttQ1dl1OPyLNXnXNnLk"
 CHAT_ID = "8791380535"
@@ -117,12 +119,13 @@ def fulltime():
         INSERT INTO Attendance (teacher, time, type, subject, level)
         VALUES (?, ?, ?, '', '')
         """, (teacher, now, action))
+
         conn.commit()
 
         msg = f"📢 Full Time\n{teacher}\n{action}\n{now}"
         send_telegram(msg)
-        flash("打卡成功！") 
 
+        flash("打卡成功！")
         return redirect(url_for("fulltime"))
 
     return render_template("fulltime.html")
@@ -132,24 +135,83 @@ def fulltime():
 def parttime():
     if request.method == "POST":
         teacher = request.form["teacher"]
-        subject = request.form["subject"]
-        level = request.form["level"]
+        action = request.form["action"]
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        cursor.execute("""
-        INSERT INTO Attendance (teacher, time, type, subject, level)
-        VALUES (?, ?, 'class', ?, ?)
-        """, (teacher, now, subject, level))
+        if action == "class":
+            subject = request.form["subject"]
+            level = request.form["level"]
+
+            if not subject or not level:
+                flash("请填写科目和年级！")
+                return redirect(url_for("parttime"))
+
+            cursor.execute("""
+            INSERT INTO Attendance (teacher, time, type, subject, level)
+            VALUES (?, ?, 'class', ?, ?)
+            """, (teacher, now, subject, level))
+
+            msg = f"📢 上课\n{teacher}\n{level} {subject}\n{now}"
+
+        elif action == "off":
+            cursor.execute("""
+            INSERT INTO Attendance (teacher, time, type, subject, level)
+            VALUES (?, ?, 'off', '', '')
+            """, (teacher, now))
+
+            msg = f"📢 下班\n{teacher}\n{now}"
+
+        else:
+            return "错误：未知操作"
+
         conn.commit()
-
-        msg = f"📢 Part Time\n{teacher}\n{level} {subject}\n{now}"
         send_telegram(msg)
-        flash("打卡成功！") 
 
+        flash("操作成功！")
         return redirect(url_for("parttime"))
 
     return render_template("parttime.html")
 
-# ===== Run =====
+@app.route("/admin")
+def admin():
+
+    month = request.args.get("month")
+
+    if not month:
+        month = datetime.datetime.now().strftime("%Y-%m")
+
+    cursor.execute("""
+    SELECT teacher, time, type, subject, level
+    FROM Attendance
+    WHERE substr(time, 1, 7) = ?
+    ORDER BY time DESC
+    """, (month,))
+
+    rows = cursor.fetchall()
+
+    part_time = defaultdict(list)
+    full_time = defaultdict(lambda: defaultdict(lambda: {"in": "", "out": ""}))
+
+    for teacher, time, ttype, subject, level in rows:
+        date = time.split(" ")[0]
+        hour = time.split(" ")[1]
+
+        # ===== FULL TIME =====
+        if ttype in ["上班", "下班"]:
+            if ttype == "上班":
+                full_time[teacher][date]["in"] = hour
+            else:
+                full_time[teacher][date]["out"] = hour
+
+        # ===== PART TIME =====
+        else:
+            part_time[teacher].append((teacher, time, ttype, subject, level))
+
+    return render_template(
+        "admin.html",
+        full_time=full_time,
+        part_time=part_time,
+        month=month
+    )
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
