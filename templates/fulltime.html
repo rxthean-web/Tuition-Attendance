@@ -1,17 +1,93 @@
-<h2>🧑‍🏫 Full Time</h2>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Full Time 打卡</title>
 
-<form method="POST">
-    <select name="teacher">
-        <option>林老师</option>
-        <option>洪老师</option>
-        <option>郑老师</option>
-    </select>
+<style>
+body {
+    font-family: Arial;
+    background: #f2f2f2;
 
-    <br><br>
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-    <button name="action" value="上班">上班</button>
-    <button name="action" value="下班">下班</button>
-</form>
+.box {
+    width: 320px;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+}
 
-<br>
-<a href="/">返回首页</a>
+h2 {
+    margin-bottom: 20px;
+}
+
+/* dropdown */
+select {
+    width: 90%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* buttons */
+button {
+    width: 90%;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+}
+
+.in {
+    background: #28a745;
+}
+
+.out {
+    background: #dc3545;
+}
+
+a {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>🧑‍🏫 Full Time</h2>
+
+    <form method="POST">
+
+        <select name="teacher">
+            <option>林老师</option>
+            <option>洪老师</option>
+            <option>郑老师</option>
+        </select>
+
+        <button class="in" name="action" value="上班">上班打卡</button>
+        <button class="out" name="action" value="下班">下班打卡</button>
+
+    </form>
+
+    <a href="/">← 返回首页</a>
+
+</div>
+
+</body>
+</html>
