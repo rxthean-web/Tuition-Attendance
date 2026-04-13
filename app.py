@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for， flash
+from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 import datetime
 import requests
@@ -121,6 +121,7 @@ def fulltime():
 
         msg = f"📢 Full Time\n{teacher}\n{action}\n{now}"
         send_telegram(msg)
+        flash("打卡成功！") 
 
         return redirect(url_for("fulltime"))
 
@@ -143,6 +144,7 @@ def parttime():
 
         msg = f"📢 Part Time\n{teacher}\n{level} {subject}\n{now}"
         send_telegram(msg)
+        flash("打卡成功！") 
 
         return redirect(url_for("parttime"))
 
