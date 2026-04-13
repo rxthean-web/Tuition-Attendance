@@ -36,10 +36,74 @@ conn.commit()
 @app.route("/")
 def home():
     return """
-    <h2>打卡系统</h2>
-    <a href='/fulltime'><button>Full Time</button></a>
-    <a href='/parttime'><button>Part Time</button></a>
-    """
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>打卡系统</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f2f2f2;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.box {
+    text-align: center;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 300px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+}
+
+.ft {
+    background: #28a745;
+}
+
+.pt {
+    background: #007bff;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>📋 打卡系统</h2>
+
+    <a href="/fulltime">
+        <button class="ft">🧑‍🏫 Full Time</button>
+    </a>
+
+    <a href="/parttime">
+        <button class="pt">📚 Part Time</button>
+    </a>
+</div>
+
+</body>
+</html>
+"""
 
 # ===== Full Time =====
 @app.route("/fulltime", methods=["GET", "POST"])
