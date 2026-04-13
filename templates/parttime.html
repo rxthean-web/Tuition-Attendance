@@ -1,24 +1,100 @@
-<h2>📚 Part Time</h2>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Part Time 打卡</title>
 
-<form method="POST">
-    <select name="teacher">
-        <option>陈老师</option>
-        <option>邓茹昕</option>
-        <option>刘老师</option>
-        <option>邓宇迅</option>
-        <option>邓俊旸</option>
-    </select>
+<style>
+body {
+    font-family: Arial;
+    background: #f2f2f2;
 
-    <br><br>
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-    <input name="subject" placeholder="科目">
-    <br><br>
+.box {
+    width: 320px;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+}
 
-    <input name="level" placeholder="年级">
-    <br><br>
+h2 {
+    margin-bottom: 20px;
+}
 
-    <button>上课打卡</button>
-</form>
+input {
+    width: 85%;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+}
+select {
+    width: 90%;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+}
 
-<br>
-<a href="/">返回首页</a>
+/* button */
+button {
+    width: 90%;
+    padding: 12px;
+    margin-top: 5px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    background: #007bff;
+}
+
+/* back link */
+a {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #333;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>📚 Part Time</h2>
+
+    <form method="POST">
+
+        <select name="teacher">
+            <option>陈老师</option>
+            <option>邓茹昕</option>
+            <option>刘老师</option>
+            <option>邓宇迅</option>
+            <option>邓俊旸</option>
+        </select>
+
+        <input name="subject" placeholder="科目">
+        <input name="level" placeholder="年级">
+
+        <button type="submit">📢 上课打卡</button>
+
+    </form>
+
+    <a href="/">← 返回首页</a>
+
+</div>
+
+</body>
+</html>
