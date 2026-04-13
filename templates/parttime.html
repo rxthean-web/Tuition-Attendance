@@ -85,10 +85,11 @@ a {
             <option>邓俊旸</option>
         </select>
 
-        <input name="subject" placeholder="科目">
-        <input name="level" placeholder="年级">
+        <input id="subject" name="subject" placeholder="科目">
+        <input id="level" name="level" placeholder="年级">
 
-        <button type="submit">📢 上课打卡</button>
+        <button type="submit" name="action" value="class" onclick="return checkInput()">📢 上课打卡</button>
+        <button type="submit" name="action" value="off">📢 下班打卡</button>
 
     </form>
 
@@ -96,14 +97,26 @@ a {
 
 </div>
 <script>
+function checkInput() {
+    let subject = document.getElementById("subject").value;
+    let level = document.getElementById("level").value;
+
+    if (subject === "" || level === "") {
+        alert("❗ 请填写科目和年级！");
+        return false;
+    }
+    return true;
+}
+</script>
+<script>
 window.onload = function() {
     let msg = "{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}";
-
     if (msg) {
         alert("✅ " + msg);
         location.reload();
     }
 }
 </script>
+
 </body>
 </html>
