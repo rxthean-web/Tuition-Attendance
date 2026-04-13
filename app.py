@@ -1,11 +1,9 @@
-from flask import Flask, render_template_string, request
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import datetime
 import requests
 
 app = Flask(__name__)
-
-teachers = ["林老师", "洪老师", "郑老师", "陈老师", "邓茹昕", "刘老师", "邓宇迅"]
 
 # ===== Telegram =====
 BOT_TOKEN = "8724884045:AAFuDkAHDwHcQccnttQ1dl1OPyLNXnXNnLk"
@@ -19,7 +17,7 @@ def send_telegram(msg):
     })
 
 # ===== DB =====
-conn = sqlite3.connect("../school.db", check_same_thread=False)
+conn = sqlite3.connect("tuition.db", check_same_thread=False)
 cursor = conn.cursor()
 
 cursor.execute("""
@@ -34,73 +32,58 @@ CREATE TABLE IF NOT EXISTS Attendance (
 """)
 conn.commit()
 
-# ===== HTML 页面 =====
-html = """
-<!DOCTYPE html>
-<html>
-<head>
-<title>精明培育中心打卡系统</title>
-</head>
-<body style="font-family:Arial; text-align:center; background:#f2f2f2;">
+# ===== 首页（选择入口）=====
+@app.route("/")
+def home():
+    return """
+    <h2>打卡系统</h2>
+    <a href='/fulltime'><button>Full Time</button></a>
+    <a href='/parttime'><button>Part Time</button></a>
+    """
 
-<h2>📋 打卡系统</h2>
-
-<form method="POST" style="background:white; padding:20px; width:300px; margin:auto; border-radius:10px;">
-
-    <label>选择老师</label><br>
-    <select name="teacher" style="width:100%; padding:8px;">
-        <option value="">请选择</option>
-        {% for t in teachers %}
-        <option value="{{t}}">{{t}}</option>
-        {% endfor %}
-    </select>
-
-    <br><br>
-
-    <input name="subject" placeholder="科目 (Part Time)" style="width:100%; padding:8px;"><br><br>
-    <input name="level" placeholder="年级 (Part Time)" style="width:100%; padding:8px;"><br><br>
-
-    <button name="action" value="in" style="width:100%; padding:10px; margin:5px;">上班打卡</button>
-    <button name="action" value="out" style="width:100%; padding:10px; margin:5px;">下班打卡</button>
-    <button name="action" value="class" style="width:100%; padding:10px; margin:5px;">上课打卡</button>
-
-</form>
-
-</body>
-</html>
-"""
-
-# ================= Route =================
-@app.route("/", methods=["GET", "POST"])
-def index():
+# ===== Full Time =====
+@app.route("/fulltime", methods=["GET", "POST"])
+def fulltime():
     if request.method == "POST":
-        teacher = request.form.get("teacher")
-        action = request.form.get("action")
-        subject = request.form.get("subject", "")
-        level = request.form.get("level", "")
-
-        if not teacher:
-            return "请选择老师"
-
+        teacher = request.form["teacher"]
+        action = request.form["action"]
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
         cursor.execute("""
         INSERT INTO Attendance (teacher, time, type, subject, level)
-        VALUES (?, ?, ?, ?, ?)
-        """, (teacher, now, action, subject, level))
-
+        VALUES (?, ?, ?, '', '')
+        """, (teacher, now, action))
         conn.commit()
 
-        # Telegram message
-        if action == "class":
-            msg = f"📢 上课通知\n{teacher}\n{level} {subject}\n{now}"
-        else:
-            msg = f"📢 打卡通知\n{teacher}\n{action}\n{now}"
-
+        msg = f"📢 Full Time\n{teacher}\n{action}\n{now}"
         send_telegram(msg)
 
-    return render_template_string(html, teachers=teachers)
+        return redirect(url_for("fulltime"))
 
-# ================= Run =================
+    return render_template("fulltime.html")
+
+# ===== Part Time =====
+@app.route("/parttime", methods=["GET", "POST"])
+def parttime():
+    if request.method == "POST":
+        teacher = request.form["teacher"]
+        subject = request.form["subject"]
+        level = request.form["level"]
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        cursor.execute("""
+        INSERT INTO Attendance (teacher, time, type, subject, level)
+        VALUES (?, ?, 'class', ?, ?)
+        """, (teacher, now, subject, level))
+        conn.commit()
+
+        msg = f"📢 Part Time\n{teacher}\n{level} {subject}\n{now}"
+        send_telegram(msg)
+
+        return redirect(url_for("parttime"))
+
+    return render_template("parttime.html")
+
+# ===== Run =====
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
