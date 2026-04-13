@@ -91,7 +91,6 @@ a {
 <script>
 window.onload = function() {
     let msg = "{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}";
-
     if (msg) {
         alert("✅ " + msg);
         location.reload();
